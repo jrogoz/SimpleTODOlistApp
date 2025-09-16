@@ -13,3 +13,7 @@ class TaskRead(BaseModel):
 
     class Config:
         orm_mode = True
+
+class TaskUpdate(BaseModel):
+    title: Optional[str] = None
+    status: Optional[StatusEnum] = None
