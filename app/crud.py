@@ -13,3 +13,11 @@ def get_tasks(db: Session):
 
 def get_task(db: Session, task_id: int):
     return db.query(models.Task).filter(models.Task.id==task_id).first()
+
+def delete_task(db: Session, task_id: int):
+    db_task = db.query(models.Task).filter(models.Task.id==task_id).first()
+    if db_task:
+        db.delete(db_task)
+        db.commit()
+        return True
+    return False

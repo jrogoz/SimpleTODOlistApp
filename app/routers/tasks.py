@@ -5,7 +5,7 @@ from app.database import get_db
 
 router = APIRouter()
 
-@router.post("/", response_model=schemas.TaskRead)
+@router.post("/", response_model=schemas.TaskRead, status_code=201)
 def create_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
     return crud.create_task(db=db, task=task)
 
@@ -19,3 +19,10 @@ def read_task(task_id: int, db: Session = Depends(get_db)):
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
     return task
+
+@router.delete("/{task_id}", status_code=204)
+def delete_task(task_id: int, db: Session = Depends(get_db)):
+    success = crud.delete_task(db=db, task_id=task_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return
