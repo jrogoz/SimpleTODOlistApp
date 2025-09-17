@@ -114,3 +114,18 @@ def test_update_task_invalid_id(db_session):
     task_db = crud.update_task(db=db_session, task_id=123, new_task=task_update)
 
     assert task_db is None
+
+def test_delete_task(db_session):
+    task = create_simple_task(db_session)
+    result = crud.delete_task(db=db_session, task_id=task.id)
+
+    assert result == True
+
+    all_tasks_db = crud.get_tasks(db=db_session)
+
+    assert len(all_tasks_db) == 0
+
+def test_delete_task_invalid_id(db_session):
+    result = crud.delete_task(db=db_session, task_id=123)
+
+    assert result == False
