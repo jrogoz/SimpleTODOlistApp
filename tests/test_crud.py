@@ -1,6 +1,6 @@
 
 from app import crud
-from app.schemas import TaskCreate, TaskRead
+from app.schemas import TaskCreate, TaskUpdate
 from app.models import StatusEnum
 
 def create_simple_task(db_session):
@@ -39,12 +39,10 @@ def test_get_task_invalid_task_id(db_session):
     assert task_db is None
 
 def test_get_all_tasks(db_session):
-
     tasks = [
         create_simple_task(db_session),
         create_simple_task(db_session)
     ]
-    
 
     all_tasks_db = crud.get_tasks(db=db_session)
 
@@ -64,3 +62,55 @@ def test_get_all_tasks_no_tasks(db_session):
     assert all_tasks_db is not None
     assert all_tasks_db == []
 
+def test_update_task(db_session):
+    task = create_simple_task(db_session)
+
+    task_update = TaskUpdate(
+            title="New title",
+            status=StatusEnum.IN_PROGRESS
+        )
+
+    task_db = crud.update_task(db=db_session, task_id=task.id, new_task=task_update)
+
+    assert isinstance(task_db, object)
+    assert task_db.id == task.id
+
+    assert task_db.title == task_update.title
+    assert task_db.status == task_update.status
+
+def test_update_task_title_only(db_session):
+    task = create_simple_task(db_session)
+
+    task_update = TaskUpdate(title="New title")
+
+    task_db = crud.update_task(db=db_session, task_id=task.id, new_task=task_update)
+
+    assert isinstance(task_db, object)
+    assert task_db.id == task.id
+    assert task_db.status == task.status
+
+    assert task_db.title == task_update.title
+    
+
+def test_update_task_status_only(db_session):
+    task = create_simple_task(db_session)
+
+    task_update = TaskUpdate(status=StatusEnum.IN_PROGRESS)
+
+    task_db = crud.update_task(db=db_session, task_id=task.id, new_task=task_update)
+
+    assert isinstance(task_db, object)
+    assert task_db.id == task.id
+    assert task_db.title == task.title
+
+    assert task_db.status == task_update.status
+
+def test_update_task_invalid_id(db_session):
+    task_update = TaskUpdate(
+        title="New title",
+        status=StatusEnum.IN_PROGRESS
+    )
+
+    task_db = crud.update_task(db=db_session, task_id=123, new_task=task_update)
+
+    assert task_db is None
