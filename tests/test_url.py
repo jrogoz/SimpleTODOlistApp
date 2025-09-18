@@ -12,6 +12,13 @@ def create_simple_task(client):
     )
     return task, response
 
+def create_multiple_tasks(client, num=2):
+    tasks_response = []
+    for _ in range(num):
+        _, response = create_simple_task(client)
+        tasks_response.append(response)
+    return tasks_response
+
 def test_create_task(client):
     task, response = create_simple_task(client)
 
@@ -61,3 +68,31 @@ def test_get_task_invalid_id(client):
     assert response is not None
     assert response.status_code == 404
     assert response.json() == {'detail': 'Task not found'}
+
+def test_get_all_tasks(client):
+    response = create_multiple_tasks(client)
+    tasks = [res.json() for res in response]
+
+    response = client.get('/tasks/')
+
+    assert response is not None
+    assert response.status_code == 200
+
+    all_tasks_url = response.json()
+
+    assert isinstance(all_tasks_url, list)
+    assert len(all_tasks_url) == len(tasks)
+
+    for t, t_url in zip(tasks, all_tasks_url):
+
+        assert t['id'] == t_url['id']
+        assert t['status'] == t_url['status']
+        assert t['title'] == t_url['title']
+
+def test_get_all_tasks_no_tasks(client):
+    response = client.get('/tasks/')
+
+    assert response is not None
+    assert response.status_code == 200
+
+    assert response.json() == []
