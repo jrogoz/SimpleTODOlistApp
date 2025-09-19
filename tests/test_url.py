@@ -1,7 +1,7 @@
 from fastapi.encoders import jsonable_encoder
 
 from app.routers.tasks import create_task
-from app.schemas import TaskCreate
+from app.schemas import TaskCreate, TaskUpdate
 from app.models import StatusEnum
 
 def create_simple_task(client):
@@ -52,15 +52,15 @@ def test_get_task(client):
 
     assert task_url['id'] is not None
     assert isinstance(task_url['id'], int)
-    assert task_url['id'] == task_url['id']
+    assert task_url['id'] == task['id']
 
     assert task_url['title'] is not None
     assert isinstance(task_url['title'], str)
-    assert task_url['title'] == task_url['title']
+    assert task_url['title'] == task['title']
 
     assert task_url['status'] is not None
     assert isinstance(StatusEnum(task_url['status']), StatusEnum)
-    assert task_url['status'] == task_url['status']
+    assert task_url['status'] == task['status']
 
 def test_get_task_invalid_id(client):
     response = client.get('/tasks/12345')
@@ -90,6 +90,7 @@ def test_get_all_tasks(client):
         assert t['title'] == t_url['title']
 
 def test_get_all_tasks_no_tasks(client):
+
     response = client.get('/tasks/')
 
     assert response is not None
