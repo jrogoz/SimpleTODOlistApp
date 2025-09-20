@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base, Session
 import enum
 
 app = FastAPI()
-DATABASE_URL = "sqlite:///./test.db"
+DATABASE_URL = "sqlite:///./db.db"
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
