@@ -190,3 +190,30 @@ def test_update_task_invalid_id(client):
     assert response.status_code == 404
 
     assert response.json() == {'detail': 'Task not found'}
+
+def test_delete_task(client):
+    _, response = create_simple_task(client)
+    task_id = response.json()['id']
+
+    response = client.get(f'/tasks/')
+    task_list_before = response.json()
+    
+    assert len(task_list_before) == 1
+
+    response = client.delete(f'/tasks/{task_id}')
+
+    assert response is not None
+    assert response.status_code == 204
+
+    response = client.get(f'/tasks/')
+    task_list_before = response.json()
+    
+    assert len(task_list_before) == 0
+
+def test_delete_task_invalid_id(client):
+    response = client.delete(f'/tasks/1234')
+
+    assert response is not None
+    assert response.status_code == 404
+
+    assert response.json() == {'detail': 'Task not found'}
