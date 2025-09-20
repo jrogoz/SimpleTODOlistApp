@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from app.models import StatusEnum
 
@@ -7,12 +7,11 @@ class TaskCreate(BaseModel):
     status: Optional[StatusEnum] = StatusEnum.TODO
 
 class TaskRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     title: str
     status: StatusEnum
-
-    class Config:
-        orm_mode = True
 
 class TaskUpdate(BaseModel):
     title: Optional[str] = None
